@@ -143,7 +143,9 @@ class GameState extends ChangeNotifier {
   // 歩数を加算（本番はHealth連携で置換）
   Future<void> addSteps(int delta) async {
     _ensureToday();
-    _snap = _snap.copyWith(stepCount: (_snap.stepCount + delta).clamp(0, 100000));
+    _snap = _snap.copyWith(
+      stepCount: (_snap.stepCount + delta).clamp(0, 100000),
+    );
     await save();
     notifyListeners();
   }
@@ -152,13 +154,22 @@ class GameState extends ChangeNotifier {
   void _ensureToday() {
     final today = _fmtDate(DateTime.now());
     if (_snap.date != today) {
-      _snap = GameSnapshot(date: today, sleepMinutes: 0, stepCount: 0, xp: _snap.xp, stage: _snap.stage, streak: _snap.streak);
+      _snap = GameSnapshot(
+        date: today,
+        sleepMinutes: 0,
+        stepCount: 0,
+        xp: _snap.xp,
+        stage: _snap.stage,
+        streak: _snap.streak,
+      );
     }
   }
 
   // 進化条件（シンプル版）
-  bool _meetsStage2() => sleepMinutes >= 360 && stepCount >= 5000; // 6h & 5,000歩
-  bool _meetsStage3() => sleepMinutes >= 480 && stepCount >= 8000; // 8h & 8,000歩
+  bool _meetsStage2() =>
+      sleepMinutes >= 360 && stepCount >= 5000; // 6h & 5,000歩
+  bool _meetsStage3() =>
+      sleepMinutes >= 480 && stepCount >= 8000; // 8h & 8,000歩
 
   int _dreamEnergy(int sleepMin) => (sleepMin / 10).round().clamp(0, 60);
 }
@@ -188,13 +199,13 @@ class GameSnapshot {
     int? stage,
     int? streak,
   }) => GameSnapshot(
-        date: date ?? this.date,
-        sleepMinutes: sleepMinutes ?? this.sleepMinutes,
-        stepCount: stepCount ?? this.stepCount,
-        xp: xp ?? this.xp,
-        stage: stage ?? this.stage,
-        streak: streak ?? this.streak,
-      );
+    date: date ?? this.date,
+    sleepMinutes: sleepMinutes ?? this.sleepMinutes,
+    stepCount: stepCount ?? this.stepCount,
+    xp: xp ?? this.xp,
+    stage: stage ?? this.stage,
+    streak: streak ?? this.streak,
+  );
 }
 
 // ------------------------------------------------------------
@@ -251,7 +262,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),
@@ -268,7 +279,10 @@ class HomeScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text('睡眠時間（分）を入力', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const Text(
+              '睡眠時間（分）を入力',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 8),
             TextField(
               controller: controller,
@@ -283,7 +297,7 @@ class HomeScreen extends StatelessWidget {
                 if (context.mounted) Navigator.pop(context);
               },
               child: const Text('決定'),
-            )
+            ),
           ],
         ),
       ),
@@ -307,7 +321,10 @@ class MorningResultScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text('今朝の結果', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text(
+              '今朝の結果',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 12),
             _ResultTile(label: '夢エネルギー', value: '+$energy'),
             _ResultTile(label: '歩数ボーナス', value: '+$stepBonus'),
@@ -316,7 +333,7 @@ class MorningResultScreen extends StatelessWidget {
             FilledButton(
               onPressed: () => Navigator.pop(context),
               child: const Text('ホームへ'),
-            )
+            ),
           ],
         ),
       ),
@@ -351,14 +368,18 @@ class MapScreen extends StatelessWidget {
             _MapCard(
               title: 'ねむりの森',
               subtitle: '8時間以上寝ると解放',
-              progress: forestUnlocked ? 1 : (gs.sleepMinutes / 480).clamp(0, 1).toDouble(),
-              detail: forestUnlocked ? '解放中！' : 'あと ${(480 - gs.sleepMinutes).clamp(0, 480)} 分',
+              progress: forestUnlocked
+                  ? 1
+                  : (gs.sleepMinutes / 480).clamp(0, 1).toDouble(),
+              detail: forestUnlocked
+                  ? '解放中！'
+                  : 'あと ${(480 - gs.sleepMinutes).clamp(0, 480)} 分',
             ),
             const Spacer(),
             OutlinedButton(
               onPressed: () => Navigator.pop(context),
               child: const Text('ホームへ'),
-            )
+            ),
           ],
         ),
       ),
@@ -382,7 +403,13 @@ class _MoruruCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFFF9FBF7),
           borderRadius: BorderRadius.circular(24),
-          boxShadow: const [BoxShadow(blurRadius: 10, color: Colors.black12, offset: Offset(0, 4))],
+          boxShadow: const [
+            BoxShadow(
+              blurRadius: 10,
+              color: Colors.black12,
+              offset: Offset(0, 4),
+            ),
+          ],
         ),
         child: Column(
           children: [
@@ -421,16 +448,12 @@ class _MoruruCard extends StatelessWidget {
                     SizedBox(height: 12),
                     Row(
                       mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _FaceDot(),
-                        SizedBox(width: 32),
-                        _FaceDot(),
-                      ],
+                      children: [_FaceDot(), SizedBox(width: 32), _FaceDot()],
                     ),
                     SizedBox(height: 8),
                     Text('ω', style: TextStyle(fontSize: 24)),
                   ],
-                )
+                ),
               ],
             ),
             const SizedBox(height: 12),
@@ -442,17 +465,27 @@ class _MoruruCard extends StatelessWidget {
   }
 
   Widget _dot(double s) => Container(
-        width: s,
-        height: s,
-        decoration: BoxDecoration(color: const Color(0xFFFFD2E1), shape: BoxShape.circle),
-      );
+    width: s,
+    height: s,
+    decoration: BoxDecoration(
+      color: const Color(0xFFFFD2E1),
+      shape: BoxShape.circle,
+    ),
+  );
 }
 
 class _FaceDot extends StatelessWidget {
   const _FaceDot();
   @override
   Widget build(BuildContext context) {
-    return Container(width: 12, height: 12, decoration: const BoxDecoration(color: Colors.black87, shape: BoxShape.circle));
+    return Container(
+      width: 12,
+      height: 12,
+      decoration: const BoxDecoration(
+        color: Colors.black87,
+        shape: BoxShape.circle,
+      ),
+    );
   }
 }
 
@@ -467,7 +500,12 @@ class _StatRow extends StatelessWidget {
       child: Row(
         children: [
           Expanded(child: Text(label)),
-          Text(value, style: const TextStyle(fontFeatures: [FontFeature.tabularFigures()])),
+          Text(
+            value,
+            style: const TextStyle(
+              fontFeatures: [FontFeature.tabularFigures()],
+            ),
+          ),
         ],
       ),
     );
@@ -482,14 +520,28 @@ class _ResultTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: Color(0xFFE6EEE8))),
-      child: ListTile(title: Text(label), trailing: Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: Color(0xFFE6EEE8)),
+      ),
+      child: ListTile(
+        title: Text(label),
+        trailing: Text(
+          value,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+      ),
     );
   }
 }
 
 class _MapCard extends StatelessWidget {
-  const _MapCard({required this.title, required this.subtitle, required this.progress, required this.detail});
+  const _MapCard({
+    required this.title,
+    required this.subtitle,
+    required this.progress,
+    required this.detail,
+  });
   final String title;
   final String subtitle;
   final double progress;
@@ -498,18 +550,27 @@ class _MapCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: Color(0xFFE6EEE8))),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: Color(0xFFE6EEE8)),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 4),
-          Text(subtitle, style: const TextStyle(color: Colors.black54)),
-          const SizedBox(height: 12),
-          LinearProgressIndicator(value: progress),
-          const SizedBox(height: 8),
-          Text(detail),
-        ]),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 4),
+            Text(subtitle, style: const TextStyle(color: Colors.black54)),
+            const SizedBox(height: 12),
+            LinearProgressIndicator(value: progress),
+            const SizedBox(height: 8),
+            Text(detail),
+          ],
+        ),
       ),
     );
   }
